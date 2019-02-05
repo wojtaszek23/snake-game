@@ -31,9 +31,6 @@ var cell_height=50;
 
 var started;
 
-// TODO: Zmienić algorytm, aby jabłko ZAWSZE pojawiało się we właściwym miejscu (w wolnym miejscu na planszy, nie na ciele węża), po czym
-// usunąć forsowanie prawidłowego miejsca dla jabłka w przypadku wystąpienia wyżej wymienionego błędu.
-
 function bodyBuild(x,y,direction){
     body_x.unshift(x);
     body_y.unshift(y);
@@ -41,91 +38,90 @@ function bodyBuild(x,y,direction){
 }
 
 function boardInit(){
-	for(var i = 0 ; i < 200 ; i++)
+    for(var i = 0 ; i < 200 ; i++)
     {
-		board_x.push((i%20)*50);
-		board_y.push((Math.floor(i/20))*50);
-		board_is_free.push(true);
+        board_x.push((i%20)*50);
+	board_y.push((Math.floor(i/20))*50);
+	board_is_free.push(true);
     }
 }
 
 function appleInit(x,y,img_name){
     apple_x = x;
-	apple_y = y;
-	apple_img = null;
-	apple_img = new Image()
-	apple_img.src = img_name;
+    apple_y = y;
+    apple_img = null;
+    apple_img = new Image()
+    apple_img.src = img_name;
 }
 
 function appleReplace(){
     context.clearRect(apple_x,apple_y,cell_width,cell_height);
-	var rand_id = Math.floor(Math.random() * (board_x.length-body_x.length));
-	var calc_rand_id=0;
-	var i = 0;
-	for ( ; i<=rand_id ; i++ )
+    var rand_id = Math.floor(Math.random() * (board_x.length-body_x.length));
+    var calc_rand_id=0;
+    var i = 0;
+    for ( ; i<=rand_id ; i++ )
+    {
+	if (board_is_free[i] == false)
 	{
-		if (board_is_free[i] == false)
-		{
-			calc_rand_id++;
-		}
+	    calc_rand_id++;
 	}
+    }
 	
-	if(rand_id!=i){
+    if(rand_id!=i){
 	rand_id = calcApplePlace(rand_id,calc_rand_id);}
 	
-	while(board_is_free[rand_id%200]==false)
-	{
-		rand_id++;
-	}
-	rand_id=rand_id%200;
-	apple_x = board_x[rand_id];
-	apple_y = board_y[rand_id];
-	context.drawImage(apple_img,apple_x,apple_y);
-	apple_is_placed = true;
+    while(board_is_free[rand_id%200]==false)
+    {
+	rand_id++;
+    }
+    rand_id=rand_id%200;
+    apple_x = board_x[rand_id];
+    apple_y = board_y[rand_id];
+    context.drawImage(apple_img,apple_x,apple_y);
+    apple_is_placed = true;
 }
 
 function calcApplePlace(rand_id,calc_rand_id){
-	var tmp = calc_rand_id;
-	var i = rand_id 
+    var i = rand_id 
     for( ; i < rand_id + calc_rand_id ; i++)
+    {
+	if ( board_is_free[i] == true )
 	{
-		if ( board_is_free[i] == true )
-		{
-			calc_rand_id--;
-		}
+	    calc_rand_id--;
 	}
-	rand_id = i;
-	if(calc_rand_id == 0)
-	{
-		return rand_id;
-	}
+    }
+    rand_id = i;
+    if(calc_rand_id == 0)
+    {
+	return rand_id;
+    }
     else
-	{
-		return calcApplePlace(rand_id,calc_rand_id);
-	}
+    {
+	return calcApplePlace(rand_id,calc_rand_id);
+    }
 }
 
 function gameInit(){
-	boardInit();
-	appleInit(8*cell_width,4*cell_height,"./apple.bmp");
-	snakeInit();
-	started = false;
-	document.onkeydown = checkKey;
+    boardInit();
+    appleInit(8*cell_width,4*cell_height,"./apple.png");
+    snakeInit();
+    started = false;
+    document.onkeydown = checkKey;
     
-	context.beginPath();
+    context.beginPath();
     context.arc(0,0,1,0,2*Math.PI);
-    context.fillStyle = "#FFF";
+    context.fillStyle = "#267F00";
     context.fill();
     
-	setTimeout(initialDrawing,50);
+    setTimeout(initialDrawing,50);
 }
 
 function initialDrawing(){
-	context.drawImage(apple_img,apple_x,apple_y);
-	context.drawImage(snake_head_right_img,body_x[0],body_y[0]);
-	context.drawImage(snake_segment_right_img,body_x[1],body_y[1]);
-	context.drawImage(snake_segment_right_img,body_x[2],body_y[2]);
-	context.drawImage(snake_segment_right_img,body_x[3],body_y[3]);
+    context.drawImage(apple_img,apple_x,apple_y);
+    context.drawImage(snake_head_right_img,body_x[0],body_y[0]);
+    context.drawImage(snake_segment_right_img,body_x[1],body_y[1]);
+    context.drawImage(snake_segment_right_img,body_x[2],body_y[2]);
+    context.drawImage(snake_segment_right_img,body_x[3],body_y[3]);
 }
 	
 checkKey = function(e){
@@ -148,15 +144,15 @@ checkKey = function(e){
     }
     else
     {
-		if ( started == false && e.keyCode == 39 )
-	    {
-			started = true;
-			snake_direction = "right";
-		}
-		else
-		{
+	if ( started == false && e.keyCode == 39 )
+	{
+	    started = true;
+	    snake_direction = "right";
+	}
+	else
+	{
             willMove = false;
-		}
+	}
     }
 
     if (willMove == true)
@@ -164,48 +160,50 @@ checkKey = function(e){
         snakeMove();
     }
 }
+
 function end(){
     clearTimeout(time);
     document.onkeydown = null;
 }
+
 function snakeInit(){
     snake_speed=50;
     snake_head_down_img = null;
     snake_head_down_img = new Image();
-    snake_head_down_img.src = './head_1.bmp';
-	snake_head_right_img = null;
+    snake_head_down_img.src = './head_1.png';
+    snake_head_right_img = null;
     snake_head_right_img = new Image();
-    snake_head_right_img.src = './head_2.bmp';
-	snake_head_up_img = null;
+    snake_head_right_img.src = './head_2.png';
+    snake_head_up_img = null;
     snake_head_up_img = new Image();
-    snake_head_up_img.src = './head_3.bmp';
-	snake_head_left_img = null;
+    snake_head_up_img.src = './head_3.png';
+    snake_head_left_img = null;
     snake_head_left_img = new Image();
-    snake_head_left_img.src = './head_4.bmp';
-	snake_segment_down_img = null;
-	snake_segment_down_img = new Image();
-	snake_segment_down_img.src = './segment_1.bmp';
-	snake_segment_right_img = null;
-	snake_segment_right_img = new Image();
-	snake_segment_right_img.src = './segment_2.bmp';
-	snake_segment_up_img = null;
-	snake_segment_up_img = new Image();
-	snake_segment_up_img.src = './segment_3.bmp';
-	snake_segment_left_img = null;
-	snake_segment_left_img = new Image();
-	snake_segment_left_img.src = './segment_4.bmp';
+    snake_head_left_img.src = './head_4.png';
+    snake_segment_down_img = null;
+    snake_segment_down_img = new Image();
+    snake_segment_down_img.src = './segment_1.png';
+    snake_segment_right_img = null;
+    snake_segment_right_img = new Image();
+    snake_segment_right_img.src = './segment_2.png';
+    snake_segment_up_img = null;
+    snake_segment_up_img = new Image();
+    snake_segment_up_img.src = './segment_3.png';
+    snake_segment_left_img = null;
+    snake_segment_left_img = new Image();
+    snake_segment_left_img.src = './segment_4.png';
     bodyBuild(1*cell_width,4*cell_height,"right");
-	bodyBuild(2*cell_width,4*cell_height,"right");
-	bodyBuild(3*cell_width,4*cell_height,"right");
-	bodyBuild(4*cell_width,4*cell_height,"right");
-	var id = body_x[0] / 50 + body_y[0] / 2.5;
-	board_is_free[id] =  false;
-	id = body_x[1] / 50 + body_y[1] / 2.5;
-	board_is_free[id] =  false;
-	id = body_x[2] / 50 + body_y[2] / 2.5;
-	board_is_free[id] =  false;
-	id = body_x[3] / 50 + body_y[3] / 2.5;
-	board_is_free[id] =  false;
+    bodyBuild(2*cell_width,4*cell_height,"right");
+    bodyBuild(3*cell_width,4*cell_height,"right");
+    bodyBuild(4*cell_width,4*cell_height,"right");
+    var id = body_x[0] / 50 + body_y[0] / 2.5;
+    board_is_free[id] =  false;
+    id = body_x[1] / 50 + body_y[1] / 2.5;
+    board_is_free[id] =  false;
+    id = body_x[2] / 50 + body_y[2] / 2.5;
+    board_is_free[id] =  false;
+    id = body_x[3] / 50 + body_y[3] / 2.5;
+    board_is_free[id] =  false;
 }
 
 function snakeMove(){
@@ -215,7 +213,7 @@ function snakeMove(){
     }
     snakeCalcBody();
     var last_segment_x = null;
-	var last_segment_y = null;
+    var last_segment_y = null;
     if (checkEat() == true || apple_is_placed == false)
     {
         appleReplace();
@@ -223,24 +221,25 @@ function snakeMove(){
     else
     {
         lastSegment_x = body_x.pop();
-		lastSegment_y = body_y.pop();
+	lastSegment_y = body_y.pop();
     }
     
     if (checkCrashBorder() == true || checkCrashBody() == true)
     {
         end();
-		body_direction[1] = body_direction[0];
-		body_x.shift();
-		body_y.shift();
-		body_direction.shift();
-		redrawSnake();
+        context.clearRect(body_x[1],body_y[1],cell_width,cell_height);
+	body_direction[1] = body_direction[0];
+	body_x.shift();
+	body_y.shift();
+	body_direction.shift();
+	redrawSnake();
         return;
     }
     if ( lastSegment_x != null )
     {
         context.clearRect(lastSegment_x,lastSegment_y,50,50);
-		var id = lastSegment_x/50 + lastSegment_y/2.5;
-		board_is_free[id] =  true;
+	var id = lastSegment_x/50 + lastSegment_y/2.5;
+	board_is_free[id] =  true;
     }
     redrawSnake();
     
@@ -249,35 +248,35 @@ function snakeMove(){
 
 function redrawSnake(){
     context.clearRect(body_x[1],body_y[1],cell_width,cell_height);
-	switch(body_direction[0])
-	{
-		case "right":
-		    context.drawImage(snake_head_right_img,body_x[0],body_y[0]);
-		    break;
-		case "up":
-		    context.drawImage(snake_head_up_img,body_x[0],body_y[0]);
-		    break;
-	    case "left":
-		    context.drawImage(snake_head_left_img,body_x[0],body_y[0]);
-		    break;
-		case "down":
-		    context.drawImage(snake_head_down_img,body_x[0],body_y[0]);
-		    break;
-	}
-	switch(body_direction[1])
-	{
-		case "right":
-		    context.drawImage(snake_segment_right_img,body_x[1],body_y[1]);
-		    break;
-		case "up":
-		    context.drawImage(snake_segment_up_img,body_x[1],body_y[1]);
-		    break;
-	    case "left":
-		    context.drawImage(snake_segment_left_img,body_x[1],body_y[1]);
-		    break;
-		case "down":
-		    context.drawImage(snake_segment_down_img,body_x[1],body_y[1]);
-		    break;
+    switch(body_direction[0])
+    {
+	case "right":
+            context.drawImage(snake_head_right_img,body_x[0],body_y[0]);
+	    break;
+	case "up":
+	    context.drawImage(snake_head_up_img,body_x[0],body_y[0]);
+	    break;
+	case "left":
+	    context.drawImage(snake_head_left_img,body_x[0],body_y[0]);
+	    break;
+	case "down":
+	    context.drawImage(snake_head_down_img,body_x[0],body_y[0]);
+	    break;
+    }
+    switch(body_direction[1])
+    {
+	case "right":
+	    context.drawImage(snake_segment_right_img,body_x[1],body_y[1]);
+	    break;
+	case "up":
+	    context.drawImage(snake_segment_up_img,body_x[1],body_y[1]);
+	    break;
+        case "left":
+	    context.drawImage(snake_segment_left_img,body_x[1],body_y[1]);
+	    break;
+	case "down":
+	    context.drawImage(snake_segment_down_img,body_x[1],body_y[1]);
+	    break;
 	}
 }
 
@@ -300,7 +299,7 @@ function snakeCalcBody(){
         default:
         break;
     }
-	board_is_free[(body_x[0]/50)+(body_y[0]/2.5)] = false;
+    board_is_free[(body_x[0]/50)+(body_y[0]/2.5)] = false;
     return;
 }
 
@@ -352,10 +351,10 @@ function checkCollision(x1,y1,w1,h1,x2,y2,w2,h2){
     {
         return false;
     }
-	else
-	{
-		return true;
-	}
+    else
+    {
+	return true;
+    }
 }
 
 document.addEventListener("DOMContentLoaded",function(event){
