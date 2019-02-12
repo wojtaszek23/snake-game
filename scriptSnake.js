@@ -29,6 +29,9 @@ var snake_direction;
 var cell_width=50;
 var cell_height=50;
 
+var score = 0;
+var game_difficulty = 0;
+
 var started;
 
 function bodyBuild(x,y,direction){
@@ -55,6 +58,11 @@ function appleInit(x,y,img_name){
 }
 
 function appleReplace(){
+    if ( body_x.length == 200 ){
+        score = score + game_difficulty;
+        document.getElementById('scores').innerHTML = "Score: " + score;
+        return;
+    }
     context.clearRect(apple_x,apple_y,cell_width,cell_height);
     var rand_id = Math.floor(Math.random() * (board_x.length-body_x.length));
     var calc_rand_id=0;
@@ -79,6 +87,8 @@ function appleReplace(){
     apple_y = board_y[rand_id];
     context.drawImage(apple_img,apple_x,apple_y);
     apple_is_placed = true;
+    score = score + game_difficulty;
+    document.getElementById('scores').innerHTML = "Score: " + score;
 }
 
 function calcApplePlace(rand_id,calc_rand_id){
@@ -103,25 +113,52 @@ function calcApplePlace(rand_id,calc_rand_id){
 
 function gameInit(){
     boardInit();
-    appleInit(8*cell_width,4*cell_height,"./apple.png");
-    snakeInit();
     started = false;
-    document.onkeydown = checkKey;
-    
-    context.beginPath();
-    context.arc(0,0,1,0,2*Math.PI);
-    context.fillStyle = "#267F00";
-    context.fill();
-    
-    setTimeout(initialDrawing,50);
+    drawStartText();
+    document.onkeydown = checkKeyStart;
+}
+
+function gameStart(){
+    document.onkeydown = null;
+    appleInit(8*cell_width,4*cell_height,"./apple.png");
+    snakeInit(); 
+    score = 0;
+    setTimeout(initialDrawing,250);
 }
 
 function initialDrawing(){
+    context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(apple_img,apple_x,apple_y);
     context.drawImage(snake_head_right_img,body_x[0],body_y[0]);
     context.drawImage(snake_segment_right_img,body_x[1],body_y[1]);
     context.drawImage(snake_segment_right_img,body_x[2],body_y[2]);
     context.drawImage(snake_segment_right_img,body_x[3],body_y[3]);
+    document.onkeydown = checkKey;
+}
+
+checkKeyStart = function(e){
+    switch (e.keyCode){
+        case 86: // 'v'
+            game_difficulty = 1;
+            break;
+        case 69: // 'e'
+            game_difficulty = 2;
+            break;
+        case 77: // 'm'
+            game_difficulty = 3;
+            break;
+        case 72: // 'h'
+            game_difficulty = 4;
+            break;
+        case 85: // 'u'
+            game_difficulty = 5;
+            break;
+    }
+
+    if (game_difficulty > 0)
+    {
+        gameStart();
+    }
 }
 	
 checkKey = function(e){
@@ -161,9 +198,33 @@ checkKey = function(e){
     }
 }
 
-function end(){
+function stopGame(){
     clearTimeout(time);
     document.onkeydown = null;
+}
+
+function end(){
+    redrawSnake();
+    drawEndText();
+    drawStartText();
+
+    body_x = null;
+    body_y = null;
+    body_direction = null;
+    board_x = null;
+    board_y = null;
+    board_is_free = null;
+
+    body_x = new Array();
+    body_y = new Array();
+    body_direction = new Array();
+    board_x = new Array();
+    board_y = new Array();
+    board_is_free = new Array();
+
+    game_difficulty = 0;
+
+    gameInit();
 }
 
 function snakeInit(){
@@ -214,25 +275,22 @@ function snakeMove(){
     snakeCalcBody();
     var last_segment_x = null;
     var last_segment_y = null;
-    if (checkEat() == true || apple_is_placed == false)
+    var apple_eaten = true;
+    if (checkEat() == false)
     {
-        appleReplace();
-    }
-    else
-    {
+        apple_eaten = false;
         lastSegment_x = body_x.pop();
 	lastSegment_y = body_y.pop();
-    }
-    
+    }    
     if (checkCrashBorder() == true || checkCrashBody() == true)
     {
-        end();
+        stopGame();
         context.clearRect(body_x[1],body_y[1],cell_width,cell_height);
 	body_direction[1] = body_direction[0];
 	body_x.shift();
 	body_y.shift();
 	body_direction.shift();
-	redrawSnake();
+        end();
         return;
     }
     if ( lastSegment_x != null )
@@ -241,9 +299,58 @@ function snakeMove(){
 	var id = lastSegment_x/50 + lastSegment_y/2.5;
 	board_is_free[id] =  true;
     }
+    if ( apple_eaten == true || apple_is_placed == false )
+    {
+        appleReplace();
+    }
     redrawSnake();
     
-    time = setTimeout(snakeMove,250);
+    var tmp_v_time;
+    
+    if ( game_difficulty == 1 )
+    {
+        tmp_v_time = 1000;
+    }
+    else if ( game_difficulty == 2 )
+    {
+        tmp_v_time = 500;
+    }
+    else if ( game_difficulty == 3 )
+    {
+        tmp_v_time = 250;
+    }
+    else if ( game_difficulty == 4 )
+    {
+        tmp_v_time = 150;
+    }
+    else if ( game_difficulty == 5 )
+    {
+        tmp_v_time = 100;
+    }
+
+    time = setTimeout(snakeMove,tmp_v_time);
+}
+
+function drawStartText(){
+context.font = "italic bold 40px Arial";
+context.textAlign = "center";
+context.textBaseline = "middle";
+context.fillStyle = "#FFFFFF";
+context.fillText('If you want to play game, push key choosing level: ', 500, 250);
+
+context.font = "italic bold 40px Arial";
+context.textAlign = "center";
+context.textBaseline = "middle";
+context.fillStyle = "#FFFFFF";
+context.fillText("v-ery easy | e-asy | m-edium | h-ard | u-ltimate", 500, 400);
+}
+
+function drawEndText(){
+context.font = "italic bold 40px Arial";
+context.textAlign = "center";
+context.textBaseline = "middle";
+context.fillStyle = "#FFFFFF";
+context.fillText("Game ended with " + score + " points", 500, 100);
 }
 
 function redrawSnake(){
