@@ -21,8 +21,6 @@ this is my first javascript game, commonly known as Snake. If You want to play i
 
 -right-arrow key - snake turns right
 
-If snake and apple will not be shown after launch game, refresh site ( push down f5 key or click on 'refresh icon' at browser toolbar panel ).
-
 
 [PL]
 Witam,
@@ -45,5 +43,3 @@ to jest moja pierwsza gra napisana w języku javascript, powszechnie znana jako 
 -klawisz ze strzałką w dół - skręt węża w dół
 
 -klawisz ze strzałką w prawo- skręt węża w prawo
-
-Jeśli wąż i jabłko nie pojawią się na ekranie po uruchomieniu strony, należy ją odświeżyć za pomocą klawisza f5, lub klikając na ikonę "odświeżania".
