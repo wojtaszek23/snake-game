@@ -1,4 +1,7 @@
 # snake-game
+
+link to short video game-play on youtube: https://www.youtube.com/watch?v=eqYJwVQ4Ado 
+
 [EN]
 Welcome,
 this is my first javascript game, commonly known as Snake. If You want to play it, follow the instruction:
@@ -9,7 +12,7 @@ this is my first javascript game, commonly known as Snake. If You want to play i
 
 -click right mouse button on file "index.html" in unpacked "snake game" folder
 
--choose "open with" -> "Google Chrome" or "Mozilla Firefox" or another web browser, but I checked game only on this two.
+-choose "open with" -> "Google Chrome" or "Mozilla Firefox" or another web browser
 
 --game control:
 
@@ -32,7 +35,7 @@ to jest moja pierwsza gra napisana w języku javascript, powszechnie znana jako 
 
 -kliknąć prawym przyciskiem myszy na plik "index.html", znajdujący się w rozpakowanym folderze.
 
--wybrać "otwórz za pomocą" -> "Google Chrome" lub "Mozilla Firefox" lub przy użyciu innej przeglądarki, ale ja sprawdzałem tylko na tych dwóch wymienionych.
+-wybrać "otwórz za pomocą" -> "Google Chrome" lub "Mozilla Firefox" lub przy użyciu innej przeglądarki
 
 --sterowanie:
 
